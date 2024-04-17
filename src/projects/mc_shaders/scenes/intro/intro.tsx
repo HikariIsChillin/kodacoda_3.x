@@ -107,7 +107,7 @@ void main() {
 			timer={40}
 			opacity={0}
 			right={() => 0}
-			fontSize={26}
+			fontSize={25}
 			lineWidth={theme.spacing.lineNormal}
 			title={'shader.glsl'}
 			stroke={

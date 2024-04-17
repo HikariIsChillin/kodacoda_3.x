@@ -43,12 +43,12 @@ const spacing = theme.spacing.windowTilingGap
 const radius = theme.spacing.windowRadius
 const c = theme.colors
 const peekerFontSize = 17
-const codeFontSize = 26
+const codeFontSize = 25
 
 export default makeScene2D(function* (view) {
 	view.add(<Rect size={view.size} shaders={catppuccin} />)
 
-	view.add(<Txt y={500} text={() => a_step().toFixed(2)} />)
+	// view.add(<Txt y={500} text={() => a_step().toFixed(2)} />)
 	view.fontFamily('JetBrains Mono')
 
 	const uv_offset = createSignal(0)
@@ -88,15 +88,12 @@ void main() {
 			<Node y={() => -60 + 60 * taskbarVisibility()}>
 				<Taskbar taskbarHeight={35} height={() => taskbarSolidity() * 35} />
 			</Node>
-			<Layout width={'100%'} grow={1} gap={spacing} direction={'row'}>
-				<Layout
-					ref={shaderPeekerContainer}
-					direction={'column'}
-					// ? eyeballed to be look exactly like
-					// ? space-between when all 3 peekers are revealed
-					gap={40}
-					// justifyContent={'space-between'} // ? only after all revealed
-				/>
+			<Layout
+				width={'100%'}
+				grow={1}
+				gap={() => taskbarSolidity() * spacing}
+				direction={'row'}
+			>
 				<Layout
 					ref={codeContainerLayout}
 					grow={1}
@@ -141,6 +138,7 @@ ${body}`}
 					ref={rightLayout}
 					direction={'column'}
 					justifyContent={'center'}
+					gap={spacing}
 				>
 					<Img
 						ref={image}
@@ -148,14 +146,16 @@ ${body}`}
 						width={'100%'}
 						radius={radius}
 						opacity={0}
+						zIndex={20}
 					/>
-					{/* <Layout
+					<Layout
 						ref={shaderPeekerContainer}
-						// ? eyeballed to be look exactly like
-						// ? space-between when all 3 peekers are revealed
-						gap={40}
-						// justifyContent={'space-between'} // ? only after all revealed
-					/> */}
+						// no space taking before content appears
+						gap={() => spacing * taskbarSolidity()}
+						maxWidth={() => 1000 * taskbarSolidity()}
+						alignItems={'start'}
+						justifyContent={'space-between'} // ? only after all revealed
+					/>
 				</Layout>
 			</Layout>
 		</Layout>
@@ -223,7 +223,7 @@ ${body}`}
 
 	const chromatic = createSignal(0.001)
 	const lens = createRef<Rect>()
-	rightLayout().add(
+	image().add(
 		<Rect
 			layout={false}
 			ref={lens}
@@ -326,7 +326,6 @@ ${body}`}
 	yield* window().playTimer(8)
 
 	yield* taskbarVisibility(1, 1)
-	yield taskbarSolidity(1, 10)
 
 	yield* all(
 		rightLayout().grow(1, 1),
@@ -337,14 +336,15 @@ ${body}`}
 			1,
 			easeInOutCubic,
 			Vector2.polarLerp
-		)
+		),
+		taskbarSolidity(1, 1)
 	)
 
 	yield image().opacity(1)
 	yield auxImg().remove()
 
 	yield* all(
-		lens().size(() => image().height() * 0.8, 1),
+		lens().size(() => image().height() * 0.85, 1),
 
 		window().title('magnifying_glass.glsl', 1),
 		sequence(
@@ -466,6 +466,7 @@ ${body}`}
 		codeCloneRect().fontSize(peekerFontSize, 1),
 		codeCloneRect().opacity(1, 1).to(0, 0),
 		codeCloneRect().fill(uvPeek().fill, 1),
+		codeCloneRect().width(uvPeek().width, 1),
 		uvPeek().reveal()
 	)
 
@@ -524,6 +525,7 @@ ${body}`}
 		codeCloneRect().fontSize(peekerFontSize, 1),
 		codeCloneRect().opacity(1, 1).to(0, 0),
 		codeCloneRect().fill(distancePeek().fill, 1),
+		codeCloneRect().width(distancePeek().width, 1),
 		distancePeek().reveal()
 	)
 
@@ -594,6 +596,7 @@ ${body}`}
 		codeCloneRect().fontSize(peekerFontSize, 1),
 		codeCloneRect().opacity(1, 1).to(0, 0),
 		codeCloneRect().fill(multiplierPeek().fill, 1),
+		codeCloneRect().width(multiplierPeek().width, 1),
 		multiplierPeek().reveal()
 	)
 
@@ -643,7 +646,7 @@ ${body}`}
 		),
 		code().selection(lines(13), 1).to(lines(13, 14), 1)
 	)
-	yield* all(a_step(7, 1), body.replace(word(9, 7, 7), '*= size / 3500.0', 1))
+	yield* all(a_step(7, 1), body.replace(word(9, 7, 7), '*= size / 4000.0', 1))
 	yield* code().selection(DEFAULT, 1)
 	yield lens().save()
 	yield* lens().size(lens().size().mul(2), 1).to(50, 1)

@@ -55,7 +55,7 @@ void main() {
 
     // 3
     vec2 size = vec2(textureSize(sourceTexture, 0));
-    uv *= mix(vec2(1.0), mix(vec2(.1),size/3500., stepFactor(7.0)), stepFactor(3.0));
+    uv *= mix(vec2(1.0), mix(vec2(.1),size/4000., stepFactor(7.0)), stepFactor(3.0));
     float multiplier = 1.0 - pow(d, 3.) * 8.;
     // 5
     multiplier = mix(multiplier, smoothstep(0., 1., multiplier), stepFactor(5.0));

@@ -35,6 +35,7 @@ export class ShaderPeeker extends Rect {
 		super({
 			fill: new Color(theme.colors.lightBlue).darken(4).alpha(0.5),
 			radius: theme.spacing.windowRadius,
+			width: '100%',
 			...props,
 			clip: true,
 			layout: true,
@@ -49,7 +50,7 @@ export class ShaderPeeker extends Rect {
 					this.codeRef()
 						.size()
 						.add(theme.spacing.windowTilingGap)
-						.mul(this.lineVisibility())
+						.mul([1, this.lineVisibility()])
 				}
 			>
 				<Code
