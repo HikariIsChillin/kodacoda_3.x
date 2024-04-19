@@ -2,6 +2,7 @@
 precision highp float;
 
 #include "@motion-canvas/core/shaders/common.glsl"
+#define PI 3.1415926535
 
 vec4 primaryPurple = vec4(167.0 / 255.0, 133.0 / 255.0, 238.0 / 255.0, 1.0);
 vec4 lightBrown = vec4(229.0 / 255.0, 217.0 / 255.0, 212.0 / 255.0, 1.0);
@@ -28,10 +29,10 @@ mat2 rotate2d(float _angle){
                 sin(_angle),cos(_angle));
 }
 
-float light(in vec2 uv, float angle) {
-    uv = rotate2d(2. + time / 75.) * uv;
+float light(in vec2 uv, float angle, float kBias) {
+    uv = rotate2d(angle + 2.0) * uv;
 
-    float d = sdParabola(uv,.95 - distance(uv * exp(abs(uv.x)) / 30., vec2(.0)));
+    float d = sdParabola(uv, kBias - distance(uv * exp(abs(uv.x)) / 30., vec2(.0)));
 
     float value = smoothstep(0. - distance(uv * exp(abs(uv.x)) / 1.7, vec2(.0)) / 5., .1, -d);
 
@@ -61,7 +62,7 @@ this should be added to a rect instead of the view
 view.add(<Rect size={view.size} shaders={catppuccin} />)
 */
 void main() {
-    vec2 uv =  sourceUV;
+    vec2 uv = sourceUV;
     vec3 col = mix(vec3(1.), blurCircle(pink.rgb, uv, vec2(.1,.6), .8), 1.);
     col = max(col, .6 * blurCircle(lightBrown.rgb, uv, vec2(.2,.8), .8));
     col = mix(col, blurCircle(darkBlue.rgb, uv, vec2(.8,.8), 1.), blurCircle(darkBlue.rgb, uv, vec2(.8,.8), 1.).b);
@@ -71,14 +72,19 @@ void main() {
 
     col = max(col, blurCircle(primaryPurple.rgb, uv, vec2(-.2), 2.));
 
-    vec2 lightUV = (uv - .5) * 3.;
-    vec3 lightCol = vec3(light(lightUV - vec2(.13,-.13), 0.));
+    col = smoothstep(0.1, 1.5, col);
 
-    col += lightCol / exp(lightCol * 1.4) ;
-    col = smoothstep(.0, 1., col);
+    vec2 lightUV = (uv - 0.5) * 3.0;
+    float lightCol = light(lightUV - sin(time/11.0) / 4.0, 0.0 + time / 75.0, 0.5 * sin(time / 10.0) + 1.0);
+    float shadowCol = light(lightUV + cos(time/13.0) / 4.0, PI + time / 75.0 + sin(time/20.0) / 2.0, 0.5 * sin(time / 7.0) + 1.0);
+    lightCol *= 3.0 / exp(lightCol * (3.0 + sin(time/13.0)));
+    shadowCol *= .5 / exp(shadowCol * (1.4 + sin(time/10.0)));
+
+    col += lightCol;
+    col -= shadowCol;
+    col = smoothstep(-.1, 1.1, col);
 
     vec4 source = texture(sourceTexture, uv);
-    vec4 destination = texture(destinationTexture, uv);
 
     // draw self and children on top of background
     outColor = mix(vec4(vec3(source.rgb), 1.), vec4(col, 1.), 1. - source.a);

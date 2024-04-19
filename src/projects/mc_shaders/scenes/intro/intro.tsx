@@ -31,7 +31,7 @@ import {
 } from '@motion-canvas/core'
 import { ShaderIcon } from '../../../../components/shader_icon/shader_icon'
 
-import catppuccin from '../../../../backgrounds/catppuccin.glsl'
+import catppuccin from '../../../../backgrounds/catppuccin_dark.glsl'
 import neumorphism from '../../shaders/neumorphism.glsl'
 import { CodeEditor } from '../../../../components/code_editor/code_editor'
 import { codeColors, theme } from '../../styles'
