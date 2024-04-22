@@ -10,6 +10,8 @@ import { codeColors } from '../../projects/mc_shaders/styles'
 import { SignalValue, SimpleSignal, createRef } from '@motion-canvas/core'
 import { BinaryTimer } from '../binary_timer/binary_timer'
 
+import backdrop_blur from '@/glsl/backdrop_blur_fbm.glsl'
+
 export interface CodeEditorProps extends RectProps {
 	title?: SignalValue<string>
 	timer?: SignalValue<number>
@@ -32,10 +34,10 @@ export class CodeEditor extends Rect {
 
 	public constructor(props?: CodeEditorProps) {
 		super({
-			// shaders: acrylic, // todo
+			shaders: backdrop_blur, // todo
 			lineWidth: 2,
 			stroke: codeColors.lavender,
-			fill: '#000000b5',
+			fill: '#000000c0',
 			padding: 20,
 			radius: 10,
 			...props,
