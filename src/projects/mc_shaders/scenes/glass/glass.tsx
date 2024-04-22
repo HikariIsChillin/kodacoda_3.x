@@ -8,7 +8,6 @@ import {
 	Line,
 	Node,
 	Rect,
-	Txt,
 	lines,
 	makeScene2D,
 	word,
@@ -28,7 +27,7 @@ import {
 } from '@motion-canvas/core'
 import { CodeEditor } from '../../../../components/code_editor/code_editor'
 
-import catppuccin from '../../../../backgrounds/catppuccin_dark.glsl'
+import catppuccin from '@/backgrounds/catppuccin_noise_dark.glsl'
 import { codeColors, theme } from '../../styles'
 
 import glassShader from './glass.glsl'
